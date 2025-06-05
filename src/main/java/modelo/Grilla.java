@@ -5,7 +5,6 @@ public class Grilla {
 	private int celdas[][];
 
 	public Grilla(int[][] celdas) {
-
 		this.celdas = celdas;
 	}
 

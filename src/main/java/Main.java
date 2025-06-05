@@ -1,8 +1,11 @@
 package main.java;
 
+import java.util.Random;
+
 import main.java.algoritmo.BuscadorDeCaminos;
+import main.java.interfaz.IGeneradorGrilla;
 import main.java.modelo.Grilla;
-import main.java.servicio.GeneradorGrillaBalanceada;
+import main.java.servicio.GeneradorGrillaAleatoria;
 
 public class Main {
 
@@ -12,9 +15,11 @@ public class Main {
 			int filas = tamaño;
 			int columnas = tamaño + 1; // Garantizamos que haya pasos pares
 
-			Grilla grilla = GeneradorGrillaBalanceada.generar(filas, columnas);
+			Random rand = new Random();
+			IGeneradorGrilla generador = new GeneradorGrillaAleatoria(rand);
+			Grilla grilla = generador.generar(filas, columnas);
 
-			System.out.println("Grilla generada aleatoriamente con tamaño " + filas + "x" + columnas);
+			System.out.println("\nGrilla generada aleatoriamente con tamaño " + filas + "x" + columnas);
 
 			// 🔍 SIN PODA
 			BuscadorDeCaminos buscadorSinPoda = new BuscadorDeCaminos();
