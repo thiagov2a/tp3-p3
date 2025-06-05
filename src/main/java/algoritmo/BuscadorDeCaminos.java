@@ -1,8 +1,8 @@
-package algoritmo;
+package main.java.algoritmo;
 
-import modelo.Camino;
-import modelo.Grilla;
-import modelo.Posicion;
+import main.java.modelo.Camino;
+import main.java.modelo.Grilla;
+import main.java.modelo.Posicion;
 
 public class BuscadorDeCaminos {
 
@@ -119,11 +119,4 @@ public class BuscadorDeCaminos {
 			
 			return false;
 		}
-	
-		
-	
-	
-	
 }
-
-
