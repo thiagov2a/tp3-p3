@@ -21,6 +21,10 @@ public class Grilla {
 	}
 
 	public int[][] getCeldas() {
-		return celdas;
+		int[][] copia = new int[celdas.length][];
+		for (int i = 0; i < celdas.length; i++) {
+			copia[i] = celdas[i].clone();
+		}
+		return copia;
 	}
 }

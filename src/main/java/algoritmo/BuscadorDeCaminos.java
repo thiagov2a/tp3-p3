@@ -31,7 +31,7 @@ public class BuscadorDeCaminos {
 		caminosExplorados++;
 
 		if (inicio.equals(destino)) {
-			return camino.estaBalanceado() && camino.longitud() == (grilla.getFilas() + grilla.getColumna() - 1);
+			return camino.estaBalanceado() && camino.obtenerLongitud() == (grilla.getFilas() + grilla.getColumna() - 1);
 		}
 
 		int columna = inicio.getColumna();
@@ -80,14 +80,14 @@ public class BuscadorDeCaminos {
 		caminosExplorados++;
 
 		// Nueva poda
-		int pasosRestantes = (grilla.getFilas() + grilla.getColumna() - 1) - camino.longitud();
-		int sumaParcial = camino.getSuma();
+		int pasosRestantes = (grilla.getFilas() + grilla.getColumna() - 1) - camino.obtenerLongitud();
+		int sumaParcial = camino.obtenerSuma();
 		if (Math.abs(sumaParcial) > pasosRestantes) {
 			return false;
 		}
 
 		if (inicio.equals(destino)) {
-			return camino.estaBalanceado() && camino.longitud() == (grilla.getFilas() + grilla.getColumna() - 1);
+			return camino.estaBalanceado() && camino.obtenerLongitud() == (grilla.getFilas() + grilla.getColumna() - 1);
 		}
 
 		int columna = inicio.getColumna();

@@ -1,9 +1,11 @@
 package main.java.modelo;
 
-public class Posicion {
+import java.util.Objects;
+
+public final class Posicion {
 	
-    private int fila;
-    private int columna;
+    private final int fila;
+    private final int columna;
 
     public Posicion(int fila, int columna) {
         this.fila = fila;
@@ -20,18 +22,14 @@ public class Posicion {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof Posicion)) return false;
         Posicion otra = (Posicion) o;
-        return this.fila == otra.fila && this.columna == otra.columna;
+        return fila == otra.fila && columna == otra.columna;
     }
 
     @Override
     public int hashCode() {
-        return fila * 31 + columna;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + fila + ", " + columna + ")";
+        return Objects.hash(fila, columna);
     }
 }

@@ -3,14 +3,20 @@ package main.java.modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.java.interfaz.IGeneradorCamino;
+
 public class Camino {
-	
-	private List<Posicion> pasos;
+
+	private final List<Posicion> pasos;
 	private int suma;
 
 	public Camino() {
 		this.pasos = new ArrayList<>();
 		this.suma = 0;
+	}
+
+	public static Camino aleatorio(Grilla grilla, IGeneradorCamino generador) {
+		return generador.generar(grilla);
 	}
 
 	public void agregarPaso(Posicion pos, int carga) {
@@ -25,19 +31,23 @@ public class Camino {
 		}
 	}
 
-	public List<Posicion> getPasos() {
-		return pasos;
-	}
-
-	public int getSuma() {
-		return suma;
-	}
-
 	public boolean estaBalanceado() {
 		return suma == 0;
 	}
 
-	public int longitud() {
+	public int obtenerLongitud() {
 		return pasos.size();
+	}
+
+	public List<Posicion> obtenerPasos() {
+		List<Posicion> copia = new ArrayList<>();
+		for (Posicion p : pasos) {
+			copia.add(p);
+		}
+		return copia;
+	}
+
+	public int obtenerSuma() {
+		return suma;
 	}
 }
