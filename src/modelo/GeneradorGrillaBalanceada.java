@@ -1,10 +1,8 @@
-
 package modelo;
 
-import modelo.Grilla;
-import algoritmo.BuscadorDeCaminos;
-
 import java.util.Random;
+
+import algoritmo.BuscadorDeCaminos;
 
 public class GeneradorGrillaBalanceada {
 
