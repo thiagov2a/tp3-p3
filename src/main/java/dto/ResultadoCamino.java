@@ -1,18 +1,15 @@
 package main.java.dto;
 
-import java.util.List;
-
 import main.java.modelo.Camino;
-import main.java.modelo.Posicion;
 
 public class ResultadoCamino {
 
 	private boolean existe;
 	private int caminosExplorados;
-	private long tiempoEjecucion; // en ms
+	private double tiempoEjecucion; // en ms
 	private Camino camino; // null si no se encontró
 
-	public ResultadoCamino(boolean existe, int caminosExplorados, long tiempoEjecucion, Camino camino) {
+	public ResultadoCamino(boolean existe, int caminosExplorados, double tiempoEjecucion, Camino camino) {
 		this.existe = existe;
 		this.caminosExplorados = caminosExplorados;
 		this.tiempoEjecucion = tiempoEjecucion;
@@ -27,7 +24,7 @@ public class ResultadoCamino {
 		return caminosExplorados;
 	}
 
-	public long getTiempoEjecucion() {
+	public double getTiempoEjecucion() {
 		return tiempoEjecucion;
 	}
 
