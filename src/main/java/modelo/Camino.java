@@ -1,13 +1,14 @@
 package main.java.modelo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import main.java.interfaz.IGeneradorCamino;
 
 public class Camino {
 
-	private final List<Posicion> pasos;
+	private final List<Celda> pasos;
 	private int suma;
 
 	public Camino() {
@@ -19,15 +20,15 @@ public class Camino {
 		return generador.generar(grilla);
 	}
 
-	public void agregarPaso(Posicion pos, int carga) {
-		pasos.add(pos);
-		suma += carga;
+	public void agregarPaso(Celda celda) {
+		pasos.add(celda);
+		suma += celda.obtenerCarga();
 	}
 
-	public void removerUltimoPaso(int carga) {
+	public void removerUltimoPaso(Celda celda) {
 		if (!pasos.isEmpty()) {
 			pasos.remove(pasos.size() - 1);
-			suma -= carga;
+			suma -= celda.obtenerCarga();
 		}
 	}
 
@@ -39,15 +40,11 @@ public class Camino {
 		return pasos.size();
 	}
 
-	public List<Posicion> obtenerPasos() {
-		List<Posicion> copia = new ArrayList<>();
-		for (Posicion p : pasos) {
-			copia.add(p);
-		}
-		return copia;
-	}
-
 	public int obtenerSuma() {
 		return suma;
+	}
+
+	public List<Celda> obtenerPasos() {
+		return Collections.unmodifiableList(pasos);
 	}
 }

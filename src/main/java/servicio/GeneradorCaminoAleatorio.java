@@ -20,8 +20,8 @@ public class GeneradorCaminoAleatorio implements IGeneradorCamino {
 
 	@Override
 	public Camino generar(Grilla grilla) {
-		int filas = grilla.getFilas();
-		int columnas = grilla.getColumna();
+		int filas = grilla.obtenerFilas();
+		int columnas = grilla.obtenerColumna();
 
 		// Generar una secuencia de movimientos: (filas - 1) hacia abajo y (columnas - 1) hacia la derecha
 		List<Boolean> movimientos = new ArrayList<>();

@@ -31,8 +31,8 @@ public class Main {
 
 			System.out.println("\n[Sin poda]");
 			System.out.println("¿Existe camino balanceado? " + (resultadoSinPoda.existe() ? "Sí" : "No"));
-			System.out.println("Caminos explorados: " + resultadoSinPoda.getCaminosExplorados());
-			System.out.println("Tiempo de ejecución: " + resultadoSinPoda.getTiempoEjecucion() + " ms");
+			System.out.println("Caminos explorados: " + resultadoSinPoda.obtenerCaminosExplorados());
+			System.out.println("Tiempo de ejecución: " + resultadoSinPoda.obtenerTiempoEjecucion() + " ms");
 
 			// BÚSQUEDA CON PODA
 			IBusquedaCamino conPoda = new BusquedaConPodaInteligente();
@@ -40,8 +40,8 @@ public class Main {
 
 			System.out.println("\n[Con poda]");
 			System.out.println("¿Existe camino balanceado? " + (resultadoConPoda.existe() ? "Sí" : "No"));
-			System.out.println("Caminos explorados: " + resultadoConPoda.getCaminosExplorados());
-			System.out.println("Tiempo de ejecución: " + resultadoConPoda.getTiempoEjecucion() + " ms");
+			System.out.println("Caminos explorados: " + resultadoConPoda.obtenerCaminosExplorados());
+			System.out.println("Tiempo de ejecución: " + resultadoConPoda.obtenerTiempoEjecucion() + " ms");
 
 			System.out.println("============================================\n");
 		}

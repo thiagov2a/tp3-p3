@@ -3,8 +3,8 @@ package main.java.algoritmo;
 import main.java.dto.ResultadoCamino;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.modelo.Camino;
+import main.java.modelo.Celda;
 import main.java.modelo.Grilla;
-import main.java.modelo.Posicion;
 
 public class BusquedaFuerzaBruta implements IBusquedaCamino {
 
@@ -16,10 +16,10 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 		caminosExplorados = 0;
 		caminoEncontrado = null;
 
-		Posicion inicio = new Posicion(0, 0);
-		Posicion destino = new Posicion(grilla.getFilas() - 1, grilla.getColumna() - 1);
+		Celda inicio = grilla.obtenerCelda(0, 0);
+		Celda destino = grilla.obtenerCelda(grilla.obtenerFilas() - 1, grilla.obtenerColumnas() - 1);
 		Camino camino = new Camino();
-		camino.agregarPaso(inicio, grilla.getCargaElectricaEn(0, 0));
+		camino.agregarPaso(inicio);
 
 		long inicioTiempo = System.nanoTime();
 		boolean existe = buscar(grilla, inicio, destino, camino);
@@ -30,37 +30,36 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 		return new ResultadoCamino(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
 	}
 
-	private boolean buscar(Grilla grilla, Posicion actual, Posicion destino, Camino camino) {
+	private boolean buscar(Grilla grilla, Celda actual, Celda destino, Camino camino) {
 		caminosExplorados++;
 
 		if (actual.equals(destino)) {
-			if (camino.estaBalanceado() && camino.obtenerLongitud() == grilla.getFilas() + grilla.getColumna() - 1) {
+			if (camino.estaBalanceado()
+					&& camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
 				caminoEncontrado = camino; // TODO: Copia profunda
 				return true;
 			}
 			return false;
 		}
 
-		int fila = actual.getFila(), columna = actual.getColumna();
+		int fila = actual.obtenerFila(), columna = actual.obtenerColumna();
 
 		// Abajo
-		if (fila + 1 < grilla.getFilas()) {
-			Posicion abajo = new Posicion(fila + 1, columna);
-			int carga = grilla.getCargaElectricaEn(fila + 1, columna);
-			camino.agregarPaso(abajo, carga);
+		if (fila + 1 < grilla.obtenerFilas()) {
+			Celda abajo = grilla.obtenerCelda(fila + 1, columna);
+			camino.agregarPaso(abajo);
 			if (buscar(grilla, abajo, destino, camino))
 				return true;
-			camino.removerUltimoPaso(carga);
+			camino.removerUltimoPaso(abajo);
 		}
 
 		// Derecha
-		if (columna + 1 < grilla.getColumna()) {
-			Posicion derecha = new Posicion(fila, columna + 1);
-			int carga = grilla.getCargaElectricaEn(fila, columna + 1);
-			camino.agregarPaso(derecha, carga);
+		if (columna + 1 < grilla.obtenerColumnas()) {
+			Celda derecha = grilla.obtenerCelda(fila, columna + 1);
+			camino.agregarPaso(derecha);
 			if (buscar(grilla, derecha, destino, camino))
 				return true;
-			camino.removerUltimoPaso(carga);
+			camino.removerUltimoPaso(derecha);
 		}
 
 		return false;

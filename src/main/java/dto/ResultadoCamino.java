@@ -20,15 +20,15 @@ public class ResultadoCamino {
 		return existe;
 	}
 
-	public int getCaminosExplorados() {
+	public int obtenerCaminosExplorados() {
 		return caminosExplorados;
 	}
 
-	public double getTiempoEjecucion() {
+	public double obtenerTiempoEjecucion() {
 		return tiempoEjecucion;
 	}
 
-	public Camino getCamino() {
+	public Camino obtenerCamino() {
 		return camino;
 	}
 }

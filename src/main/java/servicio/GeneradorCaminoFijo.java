@@ -9,8 +9,8 @@ public class GeneradorCaminoFijo implements IGeneradorCamino {
 
 	@Override
 	public Camino generar(Grilla grilla) {
-		int filas = grilla.getFilas();
-		int columnas = grilla.getColumna();
+		int filas = grilla.obtenerFilas();
+		int columnas = grilla.obtenerColumna();
 
 		Camino camino = new Camino();
 		int fila = 0, columna = 0;
