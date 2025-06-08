@@ -1,12 +1,12 @@
-package main.java.servicio;
+package main.java.servicio.generadores;
 
 import java.util.Random;
 
 import main.java.algoritmo.BusquedaConPodaInteligente;
-import main.java.dto.ResultadoCamino;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.interfaz.IGeneradorGrilla;
 import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
 
 public class GeneradorGrillaAleatoria implements IGeneradorGrilla {
 
@@ -19,7 +19,7 @@ public class GeneradorGrillaAleatoria implements IGeneradorGrilla {
 	@Override
 	public Grilla generar(int filas, int columnas) {
 		Grilla grilla;
-		ResultadoCamino camino;
+		ResultadoBusqueda camino;
 		do {
 			int[][] matriz = new int[filas][columnas];
 

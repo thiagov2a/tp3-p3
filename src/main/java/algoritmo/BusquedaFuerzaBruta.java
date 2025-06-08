@@ -1,10 +1,10 @@
 package main.java.algoritmo;
 
-import main.java.dto.ResultadoCamino;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.modelo.Camino;
 import main.java.modelo.Celda;
 import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
 
 public class BusquedaFuerzaBruta implements IBusquedaCamino {
 
@@ -12,7 +12,7 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 	private Camino caminoEncontrado;
 
 	@Override
-	public ResultadoCamino buscar(Grilla grilla) {
+	public ResultadoBusqueda buscar(Grilla grilla) {
 		caminosExplorados = 0;
 		caminoEncontrado = null;
 
@@ -27,7 +27,7 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 
 		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
 
-		return new ResultadoCamino(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
+		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
 	}
 
 	private boolean buscar(Grilla grilla, Celda actual, Celda destino, Camino camino) {
@@ -50,7 +50,7 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 			camino.agregarPaso(abajo);
 			if (buscar(grilla, abajo, destino, camino))
 				return true;
-			camino.removerUltimoPaso(abajo);
+			camino.removerUltimoPaso();
 		}
 
 		// Derecha
@@ -59,7 +59,7 @@ public class BusquedaFuerzaBruta implements IBusquedaCamino {
 			camino.agregarPaso(derecha);
 			if (buscar(grilla, derecha, destino, camino))
 				return true;
-			camino.removerUltimoPaso(derecha);
+			camino.removerUltimoPaso();
 		}
 
 		return false;

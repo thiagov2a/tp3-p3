@@ -1,15 +1,13 @@
-package main.java.dto;
+package main.java.modelo;
 
-import main.java.modelo.Camino;
-
-public class ResultadoCamino {
+public class ResultadoBusqueda {
 
 	private boolean existe;
 	private int caminosExplorados;
 	private double tiempoEjecucion; // en ms
-	private Camino camino; // null si no se encontró
+	private Camino camino; // camino = null si no se encontró
 
-	public ResultadoCamino(boolean existe, int caminosExplorados, double tiempoEjecucion, Camino camino) {
+	public ResultadoBusqueda(boolean existe, int caminosExplorados, double tiempoEjecucion, Camino camino) {
 		this.existe = existe;
 		this.caminosExplorados = caminosExplorados;
 		this.tiempoEjecucion = tiempoEjecucion;

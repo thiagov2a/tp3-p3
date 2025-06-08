@@ -9,11 +9,11 @@ import main.java.interfaz.IGeneradorCamino;
 public class Camino {
 
 	private final List<Celda> pasos;
-	private int suma;
+	private int cargaTotal;
 
 	public Camino() {
 		this.pasos = new ArrayList<>();
-		this.suma = 0;
+		this.cargaTotal = 0;
 	}
 
 	public static Camino aleatorio(Grilla grilla, IGeneradorCamino generador) {
@@ -22,26 +22,26 @@ public class Camino {
 
 	public void agregarPaso(Celda celda) {
 		pasos.add(celda);
-		suma += celda.obtenerCarga();
+		cargaTotal += celda.obtenerCarga();
 	}
 
-	public void removerUltimoPaso(Celda celda) {
+	public void removerUltimoPaso() {
 		if (!pasos.isEmpty()) {
-			pasos.remove(pasos.size() - 1);
-			suma -= celda.obtenerCarga();
+			Celda ultimo = pasos.remove(pasos.size() - 1);
+			cargaTotal -= ultimo.obtenerCarga();
 		}
 	}
 
 	public boolean estaBalanceado() {
-		return suma == 0;
+		return cargaTotal == 0;
 	}
 
 	public int obtenerLongitud() {
 		return pasos.size();
 	}
 
-	public int obtenerSuma() {
-		return suma;
+	public int obtenerCargaTotal() {
+		return cargaTotal;
 	}
 
 	public List<Celda> obtenerPasos() {

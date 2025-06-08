@@ -1,10 +1,14 @@
 package main.java.algoritmo;
 
-import main.java.dto.ResultadoCamino;
+import java.util.List;
+
+import main.java.dto.CaminoDTO;
+import main.java.dto.CeldaDTO;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.modelo.Camino;
 import main.java.modelo.Celda;
 import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
 
 public class BusquedaConPodaInteligente implements IBusquedaCamino {
 
@@ -12,7 +16,7 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 	private Camino caminoEncontrado;
 
 	@Override
-	public ResultadoCamino buscar(Grilla grilla) {
+	public ResultadoBusqueda buscar(Grilla grilla) {
 		caminosExplorados = 0;
 		caminoEncontrado = null;
 
@@ -27,14 +31,14 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 
 		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
 
-		return new ResultadoCamino(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
+		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
 	}
 
 	private boolean buscarConPoda(Grilla grilla, Celda actual, Celda destino, Camino camino) {
 		caminosExplorados++;
 
 		int pasosRestantes = grilla.obtenerFilas() + grilla.obtenerColumnas() - 1 - camino.obtenerLongitud();
-		if (Math.abs(camino.obtenerSuma()) > pasosRestantes)
+		if (Math.abs(camino.obtenerCargaTotal()) > pasosRestantes)
 			return false;
 
 		if (actual.equals(destino)) {
@@ -54,7 +58,7 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 			camino.agregarPaso(abajo);
 			if (buscarConPoda(grilla, abajo, destino, camino))
 				return true;
-			camino.removerUltimoPaso(abajo);
+			camino.removerUltimoPaso();
 		}
 
 		// Derecha
@@ -63,7 +67,7 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 			camino.agregarPaso(derecha);
 			if (buscarConPoda(grilla, derecha, destino, camino))
 				return true;
-			camino.removerUltimoPaso(derecha);
+			camino.removerUltimoPaso();
 		}
 
 		return false;

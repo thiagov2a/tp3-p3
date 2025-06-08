@@ -1,4 +1,4 @@
-package main.java.servicio;
+package main.java.servicio.generadores;
 
 import main.java.interfaz.IGeneradorGrilla;
 import main.java.modelo.Grilla;

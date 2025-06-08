@@ -1,0 +1,846 @@
+﻿===== Main.java =====
+package main.java;
+
+import java.util.Random;
+
+import main.java.algoritmo.BusquedaConPodaInteligente;
+import main.java.algoritmo.BusquedaFuerzaBruta;
+import main.java.controlador.ControladorGrilla;
+import main.java.interfaz.IBusquedaCamino;
+import main.java.interfaz.IGeneradorGrilla;
+import main.java.interfaz.IVistaControlador;
+import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
+import main.java.servicio.ServicioGrilla;
+import main.java.servicio.generadores.GeneradorGrillaAleatoria;
+import main.java.vista.VistaGrilla;
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+        ServicioGrilla servicio = new ServicioGrilla();
+        VistaGrilla vista = new VistaGrilla();
+        IVistaControlador controlador = new ControladorGrilla(vista, servicio);
+        vista.colocarControlador(controlador);
+        controlador.iniciar();
+
+		for (int tamaño = 3; tamaño <= 12; tamaño++) {
+			int filas = tamaño;
+			int columnas = tamaño + 1; // Número par de pasos
+
+			Random random = new Random();
+			IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+			Grilla grilla = generador.generar(filas, columnas);
+
+			System.out.println("\n============================================");
+			System.out.println("Tamaño de grilla: " + filas + "x" + columnas);
+
+			// BÚSQUEDA SIN PODA
+			IBusquedaCamino fuerzaBruta = new BusquedaFuerzaBruta();
+			ResultadoBusqueda resultadoSinPoda = fuerzaBruta.buscar(grilla);
+
+			System.out.println("\n[Sin poda]");
+			System.out.println("¿Existe camino balanceado? " + (resultadoSinPoda.existe() ? "Sí" : "No"));
+			System.out.println("Caminos explorados: " + resultadoSinPoda.obtenerCaminosExplorados());
+			System.out.println("Tiempo de ejecución: " + resultadoSinPoda.obtenerTiempoEjecucion() + " ms");
+
+			// BÚSQUEDA CON PODA
+			IBusquedaCamino conPoda = new BusquedaConPodaInteligente();
+			ResultadoBusqueda resultadoConPoda = conPoda.buscar(grilla);
+
+			System.out.println("\n[Con poda]");
+			System.out.println("¿Existe camino balanceado? " + (resultadoConPoda.existe() ? "Sí" : "No"));
+			System.out.println("Caminos explorados: " + resultadoConPoda.obtenerCaminosExplorados());
+			System.out.println("Tiempo de ejecución: " + resultadoConPoda.obtenerTiempoEjecucion() + " ms");
+
+			System.out.println("============================================\n");
+		}
+	}
+}
+
+===== algoritmo\BusquedaConPodaInteligente.java =====
+package main.java.algoritmo;
+
+import java.util.List;
+
+import main.java.dto.CaminoDTO;
+import main.java.dto.CeldaDTO;
+import main.java.interfaz.IBusquedaCamino;
+import main.java.modelo.Camino;
+import main.java.modelo.Celda;
+import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
+
+public class BusquedaConPodaInteligente implements IBusquedaCamino {
+
+	private int caminosExplorados;
+	private Camino caminoEncontrado;
+
+	@Override
+	public ResultadoBusqueda buscar(Grilla grilla) {
+		caminosExplorados = 0;
+		caminoEncontrado = null;
+
+		Celda inicio = grilla.obtenerCelda(0, 0);
+		Celda destino = grilla.obtenerCelda(grilla.obtenerFilas() - 1, grilla.obtenerColumnas() - 1);
+		Camino camino = new Camino();
+		camino.agregarPaso(inicio);
+
+		long inicioTiempo = System.nanoTime();
+		boolean existe = buscarConPoda(grilla, inicio, destino, camino);
+		long finTiempo = System.nanoTime();
+
+		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
+
+		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
+	}
+
+	private boolean buscarConPoda(Grilla grilla, Celda actual, Celda destino, Camino camino) {
+		caminosExplorados++;
+
+		int pasosRestantes = grilla.obtenerFilas() + grilla.obtenerColumnas() - 1 - camino.obtenerLongitud();
+		if (Math.abs(camino.obtenerCargaTotal()) > pasosRestantes)
+			return false;
+
+		if (actual.equals(destino)) {
+			if (camino.estaBalanceado()
+					&& camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
+				caminoEncontrado = camino; // TODO: Copia profunda
+				return true;
+			}
+			return false;
+		}
+
+		int fila = actual.obtenerFila(), columna = actual.obtenerColumna();
+
+		// Abajo
+		if (fila + 1 < grilla.obtenerFilas()) {
+			Celda abajo = grilla.obtenerCelda(fila + 1, columna);
+			camino.agregarPaso(abajo);
+			if (buscarConPoda(grilla, abajo, destino, camino))
+				return true;
+			camino.removerUltimoPaso();
+		}
+
+		// Derecha
+		if (columna + 1 < grilla.obtenerColumnas()) {
+			Celda derecha = grilla.obtenerCelda(fila, columna + 1);
+			camino.agregarPaso(derecha);
+			if (buscarConPoda(grilla, derecha, destino, camino))
+				return true;
+			camino.removerUltimoPaso();
+		}
+
+		return false;
+	}
+}
+
+===== algoritmo\BusquedaFuerzaBruta.java =====
+package main.java.algoritmo;
+
+import main.java.interfaz.IBusquedaCamino;
+import main.java.modelo.Camino;
+import main.java.modelo.Celda;
+import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
+
+public class BusquedaFuerzaBruta implements IBusquedaCamino {
+
+	private int caminosExplorados;
+	private Camino caminoEncontrado;
+
+	@Override
+	public ResultadoBusqueda buscar(Grilla grilla) {
+		caminosExplorados = 0;
+		caminoEncontrado = null;
+
+		Celda inicio = grilla.obtenerCelda(0, 0);
+		Celda destino = grilla.obtenerCelda(grilla.obtenerFilas() - 1, grilla.obtenerColumnas() - 1);
+		Camino camino = new Camino();
+		camino.agregarPaso(inicio);
+
+		long inicioTiempo = System.nanoTime();
+		boolean existe = buscar(grilla, inicio, destino, camino);
+		long finTiempo = System.nanoTime();
+
+		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
+
+		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
+	}
+
+	private boolean buscar(Grilla grilla, Celda actual, Celda destino, Camino camino) {
+		caminosExplorados++;
+
+		if (actual.equals(destino)) {
+			if (camino.estaBalanceado()
+					&& camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
+				caminoEncontrado = camino; // TODO: Copia profunda
+				return true;
+			}
+			return false;
+		}
+
+		int fila = actual.obtenerFila(), columna = actual.obtenerColumna();
+
+		// Abajo
+		if (fila + 1 < grilla.obtenerFilas()) {
+			Celda abajo = grilla.obtenerCelda(fila + 1, columna);
+			camino.agregarPaso(abajo);
+			if (buscar(grilla, abajo, destino, camino))
+				return true;
+			camino.removerUltimoPaso();
+		}
+
+		// Derecha
+		if (columna + 1 < grilla.obtenerColumnas()) {
+			Celda derecha = grilla.obtenerCelda(fila, columna + 1);
+			camino.agregarPaso(derecha);
+			if (buscar(grilla, derecha, destino, camino))
+				return true;
+			camino.removerUltimoPaso();
+		}
+
+		return false;
+	}
+}
+
+===== controlador\ControladorGrilla.java =====
+package main.java.controlador;
+
+import main.java.dto.GrillaDTO;
+import main.java.interfaz.IVistaControlador;
+import main.java.servicio.ServicioGrilla;
+import main.java.vista.VistaGrilla;
+
+public class ControladorGrilla implements IVistaControlador {
+
+	private VistaGrilla vista;
+	private ServicioGrilla servicio; // Lógica/modelo que carga y ejecuta algoritmo
+	private GrillaDTO grillaActual;
+
+	public ControladorGrilla(VistaGrilla vista, ServicioGrilla servicio) {
+		this.vista = vista;
+		this.servicio = servicio;
+	}
+
+	@Override
+	public void iniciar() {
+		vista.mostrar();
+	}
+
+	@Override
+	public void cargarGrilla() {
+		try {
+			grillaActual = servicio.cargarGrillaDesdeArchivo();
+			if (grillaActual == null) {
+				vista.mostrarMensaje("No se pudo cargar la grilla.");
+				return;
+			}
+			vista.actualizarGrilla(grillaActual);
+			vista.mostrarMensaje("Grilla cargada correctamente.");
+		} catch (Exception e) {
+			vista.mostrarMensaje("Error al cargar la grilla: " + e.getMessage());
+		}
+	}
+
+	@Override
+	public void ejecutarAlgoritmo() {
+		if (grillaActual == null) {
+			vista.mostrarMensaje("Primero debe cargar una grilla.");
+			return;
+		}
+
+		try {
+			var resultado = servicio.ejecutarAlgoritmo(grillaActual);
+			vista.mostrarMensaje("Resultado: " + resultado.obtenerResumen());
+			// Si el algoritmo modifica la grilla, actualizar vista
+			vista.actualizarGrilla(resultado.obtenerGrillaResultante());
+		} catch (Exception e) {
+			vista.mostrarMensaje("Error durante ejecución: " + e.getMessage());
+		}
+	}
+}
+
+===== dto\CaminoDTO.java =====
+package main.java.dto;
+
+import java.util.List;
+
+public class CaminoDTO {
+
+	private List<CeldaDTO> pasos;
+	private int cargaTotal;
+
+	public CaminoDTO(List<CeldaDTO> pasos, int cargaTotal) {
+		this.pasos = pasos;
+		this.cargaTotal = cargaTotal;
+	}
+
+	public List<CeldaDTO> obtnerPasos() {
+		return pasos;
+	}
+
+	public int obtenerSumaTotal() {
+		return cargaTotal;
+	}
+}
+
+===== dto\CeldaDTO.java =====
+package main.java.dto;
+
+public class CeldaDTO {
+
+	private int fila;
+	private int columna;
+	private int carga;
+
+	public CeldaDTO(int fila, int columna, int carga) {
+		this.fila = fila;
+		this.columna = columna;
+		this.carga = carga;
+	}
+
+	public int obtenerFila() {
+		return fila;
+	}
+
+	public int obtenerColumna() {
+		return columna;
+	}
+
+	public int obtenerCarga() {
+		return carga;
+	}
+}
+
+===== dto\GrillaDTO.java =====
+package main.java.dto;
+
+public class GrillaDTO {
+
+	private CeldaDTO[][] celdas;
+	private int filas;
+	private int columnas;
+
+	public GrillaDTO(CeldaDTO[][] celdas) {
+		this.celdas = celdas;
+		this.filas = celdas.length;
+		this.columnas = celdas[0].length;
+	}
+
+	public CeldaDTO[][] obtenerCeldas() {
+		return celdas;
+	}
+
+	public int obtenerFilas() {
+		return filas;
+	}
+
+	public int obtenerColumnas() {
+		return columnas;
+	}
+}
+
+===== interfaz\IBusquedaCamino.java =====
+package main.java.interfaz;
+
+import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
+
+public interface IBusquedaCamino {
+
+	ResultadoBusqueda buscar(Grilla grilla);
+}
+
+===== interfaz\IGeneradorCamino.java =====
+package main.java.interfaz;
+
+import main.java.modelo.Camino;
+import main.java.modelo.Grilla;
+
+public interface IGeneradorCamino {
+
+	Camino generar(Grilla grilla);
+}
+
+===== interfaz\IGeneradorGrilla.java =====
+package main.java.interfaz;
+
+import main.java.modelo.Grilla;
+
+public interface IGeneradorGrilla {
+
+	Grilla generar(int filas, int columnas);
+}
+
+===== interfaz\IVistaControlador.java =====
+package main.java.interfaz;
+
+public interface IVistaControlador {
+	
+	void iniciar();
+
+	void cargarGrilla();
+
+	void ejecutarAlgoritmo();
+}
+
+===== modelo\Camino.java =====
+package main.java.modelo;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import main.java.interfaz.IGeneradorCamino;
+
+public class Camino {
+
+	private final List<Celda> pasos;
+	private int cargaTotal;
+
+	public Camino() {
+		this.pasos = new ArrayList<>();
+		this.cargaTotal = 0;
+	}
+
+	public static Camino aleatorio(Grilla grilla, IGeneradorCamino generador) {
+		return generador.generar(grilla);
+	}
+
+	public void agregarPaso(Celda celda) {
+		pasos.add(celda);
+		cargaTotal += celda.obtenerCarga();
+	}
+
+	public void removerUltimoPaso() {
+		if (!pasos.isEmpty()) {
+			Celda ultimo = pasos.remove(pasos.size() - 1);
+			cargaTotal -= ultimo.obtenerCarga();
+		}
+	}
+
+	public boolean estaBalanceado() {
+		return cargaTotal == 0;
+	}
+
+	public int obtenerLongitud() {
+		return pasos.size();
+	}
+
+	public int obtenerCargaTotal() {
+		return cargaTotal;
+	}
+
+	public List<Celda> obtenerPasos() {
+		return Collections.unmodifiableList(pasos);
+	}
+}
+
+===== modelo\Celda.java =====
+package main.java.modelo;
+
+public class Celda {
+
+	private final int fila;
+	private final int columna;
+	private final int carga;
+
+	public Celda(int fila, int columna, int carga) {
+		this.fila = fila;
+		this.columna = columna;
+		this.carga = carga;
+	}
+
+	public int obtenerFila() {
+		return fila;
+	}
+
+	public int obtenerColumna() {
+		return columna;
+	}
+
+	public int obtenerCarga() {
+		return carga;
+	}
+}
+
+===== modelo\Grilla.java =====
+package main.java.modelo;
+
+public class Grilla {
+
+	private final Celda[][] celdas;
+	private final int filas;
+	private final int columnas;
+
+	public Grilla(int[][] matriz) {
+		validarMatriz(matriz);
+
+		this.filas = matriz.length;
+		this.columnas = matriz[0].length;
+		this.celdas = new Celda[filas][columnas];
+
+		for (int i = 0; i < filas; i++) {
+			for (int j = 0; j < columnas; j++) {
+				celdas[i][j] = new Celda(i, j, matriz[i][j]);
+			}
+		}
+	}
+
+	private void validarMatriz(int[][] matriz) {
+		if (matriz == null)
+			throw new IllegalArgumentException("La matriz no puede ser null.");
+		if (matriz.length == 0)
+			throw new IllegalArgumentException("La matriz debe tener al menos una fila.");
+		if (matriz[0] == null || matriz[0].length == 0)
+			throw new IllegalArgumentException("La matriz debe tener al menos una columna.");
+
+		int columnas = matriz[0].length;
+		for (int i = 1; i < matriz.length; i++) {
+			if (matriz[i] == null || matriz[i].length != columnas)
+				throw new IllegalArgumentException("Todas las filas deben tener la misma longitud y no ser null.");
+		}
+	}
+
+	public Celda obtenerCelda(int fila, int columna) {
+		if (fila < 0 || fila >= filas)
+			throw new IndexOutOfBoundsException("Fila fuera de rango: " + fila);
+		if (columna < 0 || columna >= columnas)
+			throw new IndexOutOfBoundsException("Columna fuera de rango: " + columna);
+
+		return celdas[fila][columna];
+	}
+
+	public Celda[][] obtenerCeldas() {
+		Celda[][] copia = new Celda[filas][columnas];
+		for (int i = 0; i < filas; i++) {
+			for (int j = 0; j < columnas; j++) {
+				copia[i][j] = celdas[i][j];
+			}
+		}
+		return copia;
+	}
+
+	public int obtenerFilas() {
+		return filas;
+	}
+
+	public int obtenerColumnas() {
+		return columnas;
+	}
+}
+
+===== modelo\ResultadoBusqueda.java =====
+package main.java.modelo;
+
+public class ResultadoBusqueda {
+
+	private boolean existe;
+	private int caminosExplorados;
+	private double tiempoEjecucion; // en ms
+	private Camino camino; // camino = null si no se encontró
+
+	public ResultadoBusqueda(boolean existe, int caminosExplorados, double tiempoEjecucion, Camino camino) {
+		this.existe = existe;
+		this.caminosExplorados = caminosExplorados;
+		this.tiempoEjecucion = tiempoEjecucion;
+		this.camino = camino;
+	}
+
+	public boolean existe() {
+		return existe;
+	}
+
+	public int obtenerCaminosExplorados() {
+		return caminosExplorados;
+	}
+
+	public double obtenerTiempoEjecucion() {
+		return tiempoEjecucion;
+	}
+
+	public Camino obtenerCamino() {
+		return camino;
+	}
+}
+
+===== servicio\ConsumoGrilla.java =====
+package main.java.servicio;
+
+public class ConsumoGrilla {
+
+}
+
+===== servicio\ServicioGrilla.java =====
+package main.java.servicio;
+
+import main.java.dto.GrillaDTO;
+import main.java.modelo.ResultadoBusqueda;
+
+public class ServicioGrilla {
+
+	public GrillaDTO cargarGrillaDesdeArchivo() {
+		// Lógica real para cargar desde archivo (acá un ejemplo simulado)
+		// En tu TP deberías usar JFileChooser o leer un archivo JSON
+		int[][] matriz = { { 1, -1, 1 }, { -1, 1, -1 }, { 1, -1, 1 } };
+		return new GrillaDTO(matriz);
+	}
+
+	public ResultadoBusqueda ejecutarAlgoritmo(GrillaDTO grilla) {
+		// Lógica real del algoritmo va acá (fuerza bruta, poda, etc.)
+		// Este ejemplo simula un resultado
+		String resumen = "Camino balanceado encontrado. Costo: 6. Caminos explorados: 15.";
+		GrillaDTO grillaModificada = grilla; // Podrías devolver una nueva si la modifica
+		return new ResultadoBusqueda(resumen, grillaModificada);
+	}
+}
+
+===== servicio\generadores\GeneradorCaminoAleatorio.java =====
+package main.java.servicio.generadores;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import main.java.interfaz.IGeneradorCamino;
+import main.java.modelo.Camino;
+import main.java.modelo.Grilla;
+
+public class GeneradorCaminoAleatorio implements IGeneradorCamino {
+
+	private Random random;
+
+	public GeneradorCaminoAleatorio(Random random) {
+		this.random = random;
+	}
+
+	@Override
+	public Camino generar(Grilla grilla) {
+		int filas = grilla.obtenerFilas();
+		int columnas = grilla.obtenerColumnas();
+
+		// Generar una secuencia de movimientos: (filas - 1) hacia abajo y (columnas - 1) hacia la derecha
+		List<Boolean> movimientos = new ArrayList<>();
+		for (int i = 0; i < filas - 1; i++)
+			movimientos.add(true); // true = abajo
+		for (int j = 0; j < columnas - 1; j++)
+			movimientos.add(false); // false = derecha
+		Collections.shuffle(movimientos, random);
+
+		// Construir el camino
+		int fila = 0, columna = 0;
+		Camino camino = new Camino();
+		camino.agregarPaso(grilla.obtenerCelda(fila, columna));
+
+		for (boolean mov : movimientos) {
+			if (mov)
+				fila++;
+			else
+				columna++;
+			camino.agregarPaso(grilla.obtenerCelda(fila, columna));
+		}
+
+		return camino;
+	}
+}
+
+===== servicio\generadores\GeneradorCaminoFijo.java =====
+package main.java.servicio.generadores;
+
+import main.java.interfaz.IGeneradorCamino;
+import main.java.modelo.Camino;
+import main.java.modelo.Grilla;
+
+public class GeneradorCaminoFijo implements IGeneradorCamino {
+
+	@Override
+	public Camino generar(Grilla grilla) {
+		int filas = grilla.obtenerFilas();
+		int columnas = grilla.obtenerColumnas();
+
+		Camino camino = new Camino();
+		int fila = 0, columna = 0;
+		camino.agregarPaso(grilla.obtenerCelda(fila, columna));
+
+		while (columna < columnas - 1) {
+			columna++;
+			camino.agregarPaso(grilla.obtenerCelda(fila, columna));
+		}
+		while (fila < filas - 1) {
+			fila++;
+			camino.agregarPaso(grilla.obtenerCelda(fila, columna));
+		}
+
+		return camino;
+	}
+}
+
+===== servicio\generadores\GeneradorGrillaAleatoria.java =====
+package main.java.servicio.generadores;
+
+import java.util.Random;
+
+import main.java.algoritmo.BusquedaConPodaInteligente;
+import main.java.interfaz.IBusquedaCamino;
+import main.java.interfaz.IGeneradorGrilla;
+import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
+
+public class GeneradorGrillaAleatoria implements IGeneradorGrilla {
+
+	private Random random;
+
+	public GeneradorGrillaAleatoria(Random random) {
+		this.random = random;
+	}
+
+	@Override
+	public Grilla generar(int filas, int columnas) {
+		Grilla grilla;
+		ResultadoBusqueda camino;
+		do {
+			int[][] matriz = new int[filas][columnas];
+
+			// Cargar con valores aleatorios de +1 y -1
+			for (int i = 0; i < filas; i++) {
+				for (int j = 0; j < columnas; j++) {
+					matriz[i][j] = random.nextBoolean() ? 1 : -1;
+				}
+			}
+			grilla = new Grilla(matriz);
+
+			// Sale del bucle cuando encuentra un camino balanceado
+			IBusquedaCamino buscador = new BusquedaConPodaInteligente();
+			camino = buscador.buscar(grilla);
+		} while (!camino.existe());
+
+		return grilla;
+	}
+}
+
+===== servicio\generadores\GeneradorGrillaFija.java =====
+package main.java.servicio.generadores;
+
+import main.java.interfaz.IGeneradorGrilla;
+import main.java.modelo.Grilla;
+
+public class GeneradorGrillaFija implements IGeneradorGrilla {
+
+	private final int[][] grillaFija;
+
+	public GeneradorGrillaFija(int[][] grillaFija) {
+		this.grillaFija = grillaFija;
+	}
+
+	@Override
+	public Grilla generar(int filas, int columnas) {
+		// TODO: Agregar validación de n x m
+		return new Grilla(grillaFija);
+	}
+}
+
+===== vista\VistaGrilla.java =====
+package main.java.vista;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import main.java.dto.CeldaDTO;
+import main.java.dto.GrillaDTO;
+import main.java.interfaz.IVistaControlador;
+
+public class VistaGrilla {
+
+	private JFrame frame;
+	private JPanel panelGrilla;
+	private JButton btnCargar;
+	private JButton btnEjecutar;
+	private IVistaControlador controlador;
+
+	public VistaGrilla() {
+		inicializar();
+	}
+
+	private void inicializar() {
+		frame = new JFrame("Visualización de Grilla");
+		frame.setSize(600, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+
+		frame.setLayout(new BorderLayout());
+
+		panelGrilla = new JPanel();
+		frame.add(panelGrilla, BorderLayout.CENTER);
+
+		JPanel panelBotones = new JPanel(new FlowLayout());
+		btnCargar = new JButton("Cargar Grilla");
+		btnEjecutar = new JButton("Ejecutar Algoritmo");
+
+		panelBotones.add(btnCargar);
+		panelBotones.add(btnEjecutar);
+		frame.add(panelBotones, BorderLayout.SOUTH);
+
+		// Delegar eventos al controlador (las interfaces pueden definirse en el
+		// controlador)
+		btnCargar.addActionListener(e -> controlador.cargarGrilla());
+		btnEjecutar.addActionListener(e -> controlador.ejecutarAlgoritmo());
+	}
+
+	public void mostrar() {
+		frame.setVisible(true);
+	}
+
+	public void actualizarGrilla(GrillaDTO grillaDTO) {
+		// Refrescar el panel con la grilla nueva
+		panelGrilla.removeAll();
+
+		int filas = grillaDTO.obtenerFilas();
+		int columnas = grillaDTO.obtenerColumnas();
+
+		panelGrilla.setLayout(new GridLayout(filas, columnas));
+
+		CeldaDTO[][] celdas = grillaDTO.obtenerCeldas();
+
+		for (int fila = 0; fila < celdas.length; fila++) {
+			for (int col = 0; col < celdas[fila].length; col++) {
+				CeldaDTO celda = celdas[fila][col];
+				JPanel celdaPanel = new JPanel();
+				celdaPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				celdaPanel.setBackground(colorPorCarga(celda.obtenerCarga()));
+				panelGrilla.add(celdaPanel);
+			}
+		}
+
+		panelGrilla.revalidate();
+		panelGrilla.repaint();
+	}
+
+	private Color colorPorCarga(int carga) {
+		// Asumamos: +1 verde, -1 rojo, 0 gris
+		return switch (carga) {
+		case 1 -> Color.GREEN;
+		case -1 -> Color.RED;
+		default -> Color.LIGHT_GRAY;
+		};
+	}
+
+	public void mostrarMensaje(String mensaje) {
+		JOptionPane.showMessageDialog(frame, mensaje);
+	}
+
+	public void colocarControlador(IVistaControlador controlador) {
+		this.controlador = controlador;
+	}
+}
+

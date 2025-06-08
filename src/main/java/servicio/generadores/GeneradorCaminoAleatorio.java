@@ -1,4 +1,4 @@
-package main.java.servicio;
+package main.java.servicio.generadores;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +8,6 @@ import java.util.Random;
 import main.java.interfaz.IGeneradorCamino;
 import main.java.modelo.Camino;
 import main.java.modelo.Grilla;
-import main.java.modelo.Posicion;
 
 public class GeneradorCaminoAleatorio implements IGeneradorCamino {
 
@@ -21,7 +20,7 @@ public class GeneradorCaminoAleatorio implements IGeneradorCamino {
 	@Override
 	public Camino generar(Grilla grilla) {
 		int filas = grilla.obtenerFilas();
-		int columnas = grilla.obtenerColumna();
+		int columnas = grilla.obtenerColumnas();
 
 		// Generar una secuencia de movimientos: (filas - 1) hacia abajo y (columnas - 1) hacia la derecha
 		List<Boolean> movimientos = new ArrayList<>();
@@ -34,14 +33,14 @@ public class GeneradorCaminoAleatorio implements IGeneradorCamino {
 		// Construir el camino
 		int fila = 0, columna = 0;
 		Camino camino = new Camino();
-		camino.agregarPaso(new Posicion(fila, columna), grilla.getCargaElectricaEn(fila, columna));
+		camino.agregarPaso(grilla.obtenerCelda(fila, columna));
 
 		for (boolean mov : movimientos) {
 			if (mov)
 				fila++;
 			else
 				columna++;
-			camino.agregarPaso(new Posicion(fila, columna), grilla.getCargaElectricaEn(fila, columna));
+			camino.agregarPaso(grilla.obtenerCelda(fila, columna));
 		}
 
 		return camino;

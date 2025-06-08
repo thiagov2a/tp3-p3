@@ -1,9 +1,9 @@
 package main.java.interfaz;
 
-import main.java.dto.ResultadoCamino;
 import main.java.modelo.Grilla;
+import main.java.modelo.ResultadoBusqueda;
 
 public interface IBusquedaCamino {
 
-	ResultadoCamino buscar(Grilla grilla);
+	ResultadoBusqueda buscar(Grilla grilla);
 }

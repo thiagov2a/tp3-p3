@@ -4,15 +4,25 @@ import java.util.Random;
 
 import main.java.algoritmo.BusquedaConPodaInteligente;
 import main.java.algoritmo.BusquedaFuerzaBruta;
-import main.java.dto.ResultadoCamino;
+import main.java.controlador.ControladorGrilla;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.interfaz.IGeneradorGrilla;
+import main.java.interfaz.IVistaControlador;
 import main.java.modelo.Grilla;
-import main.java.servicio.GeneradorGrillaAleatoria;
+import main.java.modelo.ResultadoBusqueda;
+import main.java.servicio.ServicioGrilla;
+import main.java.servicio.generadores.GeneradorGrillaAleatoria;
+import main.java.vista.VistaGrilla;
 
 public class Main {
 
 	public static void main(String[] args) {
+		
+        ServicioGrilla servicio = new ServicioGrilla();
+        VistaGrilla vista = new VistaGrilla();
+        IVistaControlador controlador = new ControladorGrilla(vista, servicio);
+        vista.colocarControlador(controlador);
+        controlador.iniciar();
 
 		for (int tamaño = 3; tamaño <= 12; tamaño++) {
 			int filas = tamaño;
@@ -27,7 +37,7 @@ public class Main {
 
 			// BÚSQUEDA SIN PODA
 			IBusquedaCamino fuerzaBruta = new BusquedaFuerzaBruta();
-			ResultadoCamino resultadoSinPoda = fuerzaBruta.buscar(grilla);
+			ResultadoBusqueda resultadoSinPoda = fuerzaBruta.buscar(grilla);
 
 			System.out.println("\n[Sin poda]");
 			System.out.println("¿Existe camino balanceado? " + (resultadoSinPoda.existe() ? "Sí" : "No"));
@@ -36,7 +46,7 @@ public class Main {
 
 			// BÚSQUEDA CON PODA
 			IBusquedaCamino conPoda = new BusquedaConPodaInteligente();
-			ResultadoCamino resultadoConPoda = conPoda.buscar(grilla);
+			ResultadoBusqueda resultadoConPoda = conPoda.buscar(grilla);
 
 			System.out.println("\n[Con poda]");
 			System.out.println("¿Existe camino balanceado? " + (resultadoConPoda.existe() ? "Sí" : "No"));
