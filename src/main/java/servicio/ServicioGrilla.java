@@ -1,22 +1,21 @@
 package main.java.servicio;
 
+import main.java.algoritmo.BusquedaConPodaInteligente;
 import main.java.dto.GrillaDTO;
+import main.java.interfaz.IBusquedaCamino;
+import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
 
 public class ServicioGrilla {
 
 	public GrillaDTO cargarGrillaDesdeArchivo() {
-		// Lógica real para cargar desde archivo (acá un ejemplo simulado)
-		// En tu TP deberías usar JFileChooser o leer un archivo JSON
-		int[][] matriz = { { 1, -1, 1 }, { -1, 1, -1 }, { 1, -1, 1 } };
-		return new GrillaDTO(matriz);
+		// TODO: Cargar JSON, parsear a Grilla y luego convertir a DTO
+		GrillaDTO grillaDTO = null;
+		return grillaDTO;
 	}
 
-	public ResultadoBusqueda ejecutarAlgoritmo(GrillaDTO grilla) {
-		// Lógica real del algoritmo va acá (fuerza bruta, poda, etc.)
-		// Este ejemplo simula un resultado
-		String resumen = "Camino balanceado encontrado. Costo: 6. Caminos explorados: 15.";
-		GrillaDTO grillaModificada = grilla; // Podrías devolver una nueva si la modifica
-		return new ResultadoBusqueda(resumen, grillaModificada);
+	public ResultadoBusqueda ejecutarAlgoritmo(Grilla grilla) {
+		IBusquedaCamino algoritmo = new BusquedaConPodaInteligente(); // o seleccionable
+		return algoritmo.buscar(grilla);
 	}
 }
