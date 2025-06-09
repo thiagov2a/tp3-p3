@@ -3,8 +3,10 @@ package main.java.interfaz;
 public interface IVistaControlador {
 	
 	void iniciar();
+	
+	void cargarGrillaAleatoria();
 
-	void cargarGrilla();
+	void cargarGrillaDesdeArchivo();
 
 	void ejecutarAlgoritmo();
 }

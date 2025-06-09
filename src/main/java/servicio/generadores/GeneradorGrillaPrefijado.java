@@ -3,11 +3,11 @@ package main.java.servicio.generadores;
 import main.java.interfaz.IGeneradorGrilla;
 import main.java.modelo.Grilla;
 
-public class GeneradorGrillaFija implements IGeneradorGrilla {
+public class GeneradorGrillaPrefijado implements IGeneradorGrilla {
 
 	private final int[][] grillaFija;
 
-	public GeneradorGrillaFija(int[][] grillaFija) {
+	public GeneradorGrillaPrefijado(int[][] grillaFija) {
 		this.grillaFija = grillaFija;
 	}
 

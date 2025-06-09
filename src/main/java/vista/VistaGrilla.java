@@ -46,9 +46,7 @@ public class VistaGrilla {
 		panelBotones.add(btnEjecutar);
 		frame.add(panelBotones, BorderLayout.SOUTH);
 
-		// Delegar eventos al controlador (las interfaces pueden definirse en el
-		// controlador)
-		btnCargar.addActionListener(e -> controlador.cargarGrilla());
+		btnCargar.addActionListener(e -> controlador.cargarGrillaAleatoria());
 		btnEjecutar.addActionListener(e -> controlador.ejecutarAlgoritmo());
 	}
 
@@ -57,7 +55,6 @@ public class VistaGrilla {
 	}
 
 	public void actualizarGrilla(GrillaDTO grillaDTO) {
-		// Refrescar el panel con la grilla nueva
 		panelGrilla.removeAll();
 
 		int filas = grillaDTO.obtenerFilas();
@@ -82,7 +79,6 @@ public class VistaGrilla {
 	}
 
 	private Color colorPorCarga(int carga) {
-		// Asumamos: +1 verde, -1 rojo, 0 gris
 		return switch (carga) {
 		case 1 -> Color.GREEN;
 		case -1 -> Color.RED;

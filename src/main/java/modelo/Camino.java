@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import main.java.interfaz.IGeneradorCamino;
-
 public class Camino {
 
 	private final List<Celda> pasos;
@@ -14,10 +12,6 @@ public class Camino {
 	public Camino() {
 		this.pasos = new ArrayList<>();
 		this.cargaTotal = 0;
-	}
-
-	public static Camino aleatorio(Grilla grilla, IGeneradorCamino generador) {
-		return generador.generar(grilla);
 	}
 
 	public void agregarPaso(Celda celda) {
