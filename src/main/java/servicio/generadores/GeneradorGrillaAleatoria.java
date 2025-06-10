@@ -19,7 +19,7 @@ public class GeneradorGrillaAleatoria implements IGeneradorGrilla {
 	@Override
 	public Grilla generar(int filas, int columnas) {
 		Grilla grilla;
-		ResultadoBusqueda camino;
+		ResultadoBusqueda resultadoBusqueda;
 		do {
 			int[][] matriz = new int[filas][columnas];
 
@@ -33,8 +33,8 @@ public class GeneradorGrillaAleatoria implements IGeneradorGrilla {
 
 			// Sale del bucle cuando encuentra un camino balanceado
 			IBusquedaCamino buscador = new BusquedaConPodaInteligente();
-			camino = buscador.buscar(grilla);
-		} while (!camino.existe());
+			resultadoBusqueda = buscador.buscar(grilla);
+		} while (!resultadoBusqueda.existe());
 
 		return grilla;
 	}

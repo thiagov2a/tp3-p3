@@ -29,4 +29,11 @@ public class ResultadoBusqueda {
 	public Camino obtenerCamino() {
 		return camino;
 	}
+	
+	@Override
+	public String toString() {
+		return "¿Existe camino? " + (existe() ? "Sí" : "No")
+			+ "\nCaminos explorados: " + caminosExplorados
+			+ "\nTiempo de ejecución (en ms): " + tiempoEjecucion;		
+	}
 }

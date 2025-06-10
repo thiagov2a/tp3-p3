@@ -5,6 +5,7 @@ import main.java.modelo.Grilla;
 
 public class GeneradorGrillaPrefijado implements IGeneradorGrilla {
 
+	// TODO: Borrar todo
 	private final int[][] grillaFija;
 
 	public GeneradorGrillaPrefijado(int[][] grillaFija) {

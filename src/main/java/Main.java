@@ -10,7 +10,6 @@ import main.java.interfaz.IGeneradorGrilla;
 import main.java.interfaz.IVistaControlador;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
-import main.java.servicio.ConsumoGrilla;
 import main.java.servicio.ServicioGrilla;
 import main.java.servicio.generadores.GeneradorGrillaAleatoria;
 import main.java.vista.VistaGrilla;
@@ -18,21 +17,22 @@ import main.java.vista.VistaGrilla;
 public class Main {
 
 	public static void main(String[] args) {
-		
-        ServicioGrilla servicio = new ServicioGrilla();
-        VistaGrilla vista = new VistaGrilla();
-        IVistaControlador controlador = new ControladorGrilla(vista, servicio);
-        vista.colocarControlador(controlador);
-        controlador.iniciar();
+
+		ServicioGrilla servicio = new ServicioGrilla();
+		VistaGrilla vista = new VistaGrilla();
+		IVistaControlador controlador = new ControladorGrilla(vista, servicio);
+		vista.colocarControlador(controlador);
+		controlador.iniciar();
 
 		for (int tamaño = 3; tamaño <= 12; tamaño++) {
 			int filas = tamaño;
 			int columnas = tamaño + 1; // Número par de pasos
 
-			//Random random = new Random();
-			//IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
-			ConsumoGrilla grillaa = new ConsumoGrilla();
-			Grilla grilla = grillaa.cargarGrillaDesdeJson("src/main/recursos/GrillaSimple.json");
+			Random random = new Random();
+			IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+			Grilla grilla = generador.generar(filas, columnas);
+			// Grilla grilla =
+			// ConsumoGrilla.cargarGrillaDesdeJson("src/main/recursos/grilla_ejemplo_1.json");
 
 			System.out.println("\n============================================");
 			System.out.println("Tamaño de grilla: " + filas + "x" + columnas);

@@ -1,12 +1,14 @@
 package main.java.servicio;
 
+import java.util.List;
 import java.util.Random;
 
-import main.java.algoritmo.BusquedaConPodaInteligente;
+import main.java.dto.CaminoDTO;
 import main.java.dto.CeldaDTO;
 import main.java.dto.GrillaDTO;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.interfaz.IGeneradorGrilla;
+import main.java.modelo.Camino;
 import main.java.modelo.Celda;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
@@ -15,20 +17,18 @@ import main.java.servicio.generadores.GeneradorGrillaAleatoria;
 public class ServicioGrilla {
 
 	public Grilla cargarGrillaAleatoria() {
-		Random rand = new Random();
-		IGeneradorGrilla generador = new GeneradorGrillaAleatoria(rand);
-		Grilla grilla = generador.generar(rand.nextInt(1, 10), rand.nextInt(1, 10));
-		return grilla;
+		Random random = new Random();
+		IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+		int filas = random.nextInt(1, 15);
+		int columnas = filas + 1;
+		return generador.generar(filas, columnas);
 	}
 
 	public Grilla cargarGrillaDesdeArchivo() {
-		// TODO: Cargar JSON, parsear a Grilla y luego convertir a DTO
-		Grilla grilla = null;
-		return grilla;
+		return ConsumoGrilla.cargarGrillaDesdeJson("src/main/recursos/grilla_ejemplo_1.json");
 	}
 
-	public ResultadoBusqueda ejecutarAlgoritmo(Grilla grilla) {
-		IBusquedaCamino algoritmo = new BusquedaConPodaInteligente(); // o seleccionable
+	public ResultadoBusqueda ejecutarAlgoritmo(IBusquedaCamino algoritmo, Grilla grilla) {
 		return algoritmo.buscar(grilla);
 	}
 
@@ -42,5 +42,21 @@ public class ServicioGrilla {
 			}
 		}
 		return new GrillaDTO(celdasDTO);
+	}
+
+	public CaminoDTO obtenerCaminoDTO(Camino camino) {
+		List<Celda> pasos = camino.obtenerPasos();
+		
+		List<CeldaDTO> pasosDTO = pasos.stream().map(p -> new CeldaDTO(
+				p.obtenerFila(),
+				p.obtenerColumna(),
+				p.obtenerCarga()))
+				.toList();
+		
+		int cargaTotal = pasos.stream()
+				.mapToInt(p -> p.obtenerCarga())
+				.sum();
+		
+		return new CaminoDTO(pasosDTO, cargaTotal);
 	}
 }

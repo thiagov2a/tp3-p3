@@ -12,7 +12,7 @@ public class CaminoDTO {
 		this.cargaTotal = cargaTotal;
 	}
 
-	public List<CeldaDTO> obtnerPasos() {
+	public List<CeldaDTO> obtenerPasos() {
 		return pasos;
 	}
 

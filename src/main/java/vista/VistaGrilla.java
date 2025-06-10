@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import main.java.dto.CaminoDTO;
 import main.java.dto.CeldaDTO;
 import main.java.dto.GrillaDTO;
 import main.java.interfaz.IVistaControlador;
@@ -19,7 +22,8 @@ public class VistaGrilla {
 
 	private JFrame frame;
 	private JPanel panelGrilla;
-	private JButton btnCargar;
+	private JButton btnCargarJson;
+	private JButton btnCargarGrilla;
 	private JButton btnEjecutar;
 	private IVistaControlador controlador;
 
@@ -39,14 +43,17 @@ public class VistaGrilla {
 		frame.add(panelGrilla, BorderLayout.CENTER);
 
 		JPanel panelBotones = new JPanel(new FlowLayout());
-		btnCargar = new JButton("Cargar Grilla");
+		btnCargarJson = new JButton("Cargar Json");
+		btnCargarGrilla = new JButton("Cargar Grilla");
 		btnEjecutar = new JButton("Ejecutar Algoritmo");
 
-		panelBotones.add(btnCargar);
+		panelBotones.add(btnCargarJson);
+		panelBotones.add(btnCargarGrilla);
 		panelBotones.add(btnEjecutar);
 		frame.add(panelBotones, BorderLayout.SOUTH);
 
-		btnCargar.addActionListener(e -> controlador.cargarGrillaAleatoria());
+		btnCargarJson.addActionListener(e -> controlador.cargarGrillaDesdeArchivo());
+		btnCargarGrilla.addActionListener(e -> controlador.cargarGrillaAleatoria());
 		btnEjecutar.addActionListener(e -> controlador.ejecutarAlgoritmo());
 	}
 
@@ -64,10 +71,13 @@ public class VistaGrilla {
 
 		CeldaDTO[][] celdas = grillaDTO.obtenerCeldas();
 
-		for (int fila = 0; fila < celdas.length; fila++) {
-			for (int col = 0; col < celdas[fila].length; col++) {
-				CeldaDTO celda = celdas[fila][col];
+		for (int i = 0; i < celdas.length; i++) {
+			for (int j = 0; j < celdas[i].length; j++) {
+				CeldaDTO celda = celdas[i][j];
 				JPanel celdaPanel = new JPanel();
+				Integer celdaCarga = celda.obtenerCarga();
+				JLabel celdaLabel = new JLabel(celdaCarga.toString());
+				celdaPanel.add(celdaLabel, BorderLayout.CENTER);
 				celdaPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				celdaPanel.setBackground(colorPorCarga(celda.obtenerCarga()));
 				panelGrilla.add(celdaPanel);
@@ -76,6 +86,19 @@ public class VistaGrilla {
 
 		panelGrilla.revalidate();
 		panelGrilla.repaint();
+	}
+	
+	public void actualizarGrilla(GrillaDTO grillaDTO, CaminoDTO caminoDTO) {
+		List<CeldaDTO> pasos = caminoDTO.obtenerPasos();
+		int numeroDeColumnas = grillaDTO.obtenerColumnas();
+		for (CeldaDTO celdaDTO : pasos) {
+			int fila = celdaDTO.obtenerFila();
+			int columna = celdaDTO.obtenerColumna();
+			int indice = (fila * numeroDeColumnas) + columna;
+			JPanel celdaPanel = (JPanel) panelGrilla.getComponent(indice);
+			celdaPanel.setBackground(colorPorCarga(0));
+			panelGrilla.add(celdaPanel, indice);
+		}
 	}
 
 	private Color colorPorCarga(int carga) {
@@ -86,8 +109,9 @@ public class VistaGrilla {
 		};
 	}
 
-	public void mostrarMensaje(String mensaje) {
-		JOptionPane.showMessageDialog(frame, mensaje);
+	// "tipo" puede tener los valores: 0 (error), 1 (information), 2 (warning)
+	public void mostrarMensaje(int tipo, String titulo, String mensaje) {
+		JOptionPane.showMessageDialog(frame, mensaje, titulo, tipo, null);
 	}
 
 	public void colocarControlador(IVistaControlador controlador) {
