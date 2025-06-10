@@ -27,12 +27,12 @@ public class Grilla {
 			throw new IllegalArgumentException("La matriz debe tener al menos una fila.");
 		if (matriz[0] == null || matriz[0].length == 0)
 			throw new IllegalArgumentException("La matriz debe tener al menos una columna.");
+		
 
 		int columnas = matriz[0].length;
-		for (int i = 1; i < matriz.length; i++) {
-			if (matriz[i] == null || matriz[i].length != columnas)
-				throw new IllegalArgumentException("Todas las filas deben tener la misma longitud y no ser null.");
-		}
+		int filas = matriz.length;
+		if (filas==columnas )
+			throw new IllegalArgumentException("La suma de las filas y las columnas debe ser impar (f+c-1).");
 	}
 
 	public Celda obtenerCelda(int fila, int columna) {

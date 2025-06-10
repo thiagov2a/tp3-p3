@@ -10,6 +10,7 @@ import main.java.interfaz.IGeneradorGrilla;
 import main.java.interfaz.IVistaControlador;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
+import main.java.servicio.ConsumoGrilla;
 import main.java.servicio.ServicioGrilla;
 import main.java.servicio.generadores.GeneradorGrillaAleatoria;
 import main.java.vista.VistaGrilla;
@@ -28,9 +29,10 @@ public class Main {
 			int filas = tamaño;
 			int columnas = tamaño + 1; // Número par de pasos
 
-			Random random = new Random();
-			IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
-			Grilla grilla = generador.generar(filas, columnas);
+			//Random random = new Random();
+			//IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+			ConsumoGrilla grillaa = new ConsumoGrilla();
+			Grilla grilla = grillaa.cargarGrillaDesdeJson("src/main/recursos/GrillaSimple.json");
 
 			System.out.println("\n============================================");
 			System.out.println("Tamaño de grilla: " + filas + "x" + columnas);
