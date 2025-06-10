@@ -3,6 +3,7 @@ package main.java.vista;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import main.java.dto.CaminoDTO;
 import main.java.dto.CeldaDTO;
@@ -74,12 +76,18 @@ public class VistaGrilla {
 		for (int i = 0; i < celdas.length; i++) {
 			for (int j = 0; j < celdas[i].length; j++) {
 				CeldaDTO celda = celdas[i][j];
-				JPanel celdaPanel = new JPanel();
+				JPanel celdaPanel = new JPanel(new BorderLayout());
 				Integer celdaCarga = celda.obtenerCarga();
 				JLabel celdaLabel = new JLabel(celdaCarga.toString());
+
+				celdaLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+				celdaLabel.setHorizontalAlignment(SwingConstants.CENTER);
+				celdaLabel.setVerticalAlignment(SwingConstants.CENTER);
+
 				celdaPanel.add(celdaLabel, BorderLayout.CENTER);
 				celdaPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				celdaPanel.setBackground(colorPorCarga(celda.obtenerCarga()));
+
 				panelGrilla.add(celdaPanel);
 			}
 		}
