@@ -13,6 +13,10 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 
 	@Override
 	public ResultadoBusqueda buscar(Grilla grilla) {
+        if (grilla == null) {
+            throw new IllegalArgumentException("La grilla no puede ser null.");
+        }
+		
 		caminosExplorados = 0;
 		caminoEncontrado = null;
 
@@ -25,9 +29,9 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 		boolean existe = buscarConPoda(grilla, inicio, destino, camino);
 		long finTiempo = System.nanoTime();
 
-		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
+		double tiempoEjecucion = (finTiempo - inicioTiempo) / 1_000_000.0;
 
-		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
+		return new ResultadoBusqueda(existe, caminosExplorados, tiempoEjecucion, caminoEncontrado);
 	}
 
 	private boolean buscarConPoda(Grilla grilla, Celda actual, Celda destino, Camino camino) {
@@ -48,7 +52,7 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 
 		int fila = actual.obtenerFila(), columna = actual.obtenerColumna();
 
-		// Abajo
+		// Mover hacia abajo
 		if (fila + 1 < grilla.obtenerFilas()) {
 			Celda abajo = grilla.obtenerCelda(fila + 1, columna);
 			camino.agregarPaso(abajo);
@@ -57,7 +61,7 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 			camino.removerUltimoPaso();
 		}
 
-		// Derecha
+		// Mover hacia la derecha
 		if (columna + 1 < grilla.obtenerColumnas()) {
 			Celda derecha = grilla.obtenerCelda(fila, columna + 1);
 			camino.agregarPaso(derecha);

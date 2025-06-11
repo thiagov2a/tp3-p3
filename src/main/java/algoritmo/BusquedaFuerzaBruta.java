@@ -8,60 +8,63 @@ import main.java.modelo.ResultadoBusqueda;
 
 public class BusquedaFuerzaBruta implements IBusquedaCamino {
 
-	private int caminosExplorados;
-	private Camino caminoEncontrado;
+    private int caminosExplorados;
+    private Camino caminoEncontrado;
 
-	@Override
-	public ResultadoBusqueda buscar(Grilla grilla) {
-		caminosExplorados = 0;
-		caminoEncontrado = null;
+    @Override
+    public ResultadoBusqueda buscar(Grilla grilla) {
+        if (grilla == null) {
+            throw new IllegalArgumentException("La grilla no puede ser null.");
+        }
 
-		Celda inicio = grilla.obtenerCelda(0, 0);
-		Celda destino = grilla.obtenerCelda(grilla.obtenerFilas() - 1, grilla.obtenerColumnas() - 1);
-		Camino camino = new Camino();
-		camino.agregarPaso(inicio);
+        caminosExplorados = 0;
+        caminoEncontrado = null;
 
-		long inicioTiempo = System.nanoTime();
-		boolean existe = buscar(grilla, inicio, destino, camino);
-		long finTiempo = System.nanoTime();
+        Celda inicio = grilla.obtenerCelda(0, 0);
+        Celda destino = grilla.obtenerCelda(grilla.obtenerFilas() - 1, grilla.obtenerColumnas() - 1);
+        Camino camino = new Camino();
+        camino.agregarPaso(inicio);
 
-		double duracionEnMs = (finTiempo - inicioTiempo) / 1_000_000.0;
+        long inicioTiempo = System.nanoTime();
+        boolean existe = buscar(grilla, inicio, destino, camino);
+        long finTiempo = System.nanoTime();
 
-		return new ResultadoBusqueda(existe, caminosExplorados, duracionEnMs, caminoEncontrado);
-	}
+        double tiempoEjecucion = (finTiempo - inicioTiempo) / 1_000_000.0;
 
-	private boolean buscar(Grilla grilla, Celda actual, Celda destino, Camino camino) {
-		caminosExplorados++;
+        return new ResultadoBusqueda(existe, caminosExplorados, tiempoEjecucion, caminoEncontrado);
+    }
 
-		if (actual.equals(destino)) {
-			if (camino.estaBalanceado()
-					&& camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
-				caminoEncontrado = camino; // TODO: Copia profunda
-				return true;
-			}
-			return false;
-		}
+    private boolean buscar(Grilla grilla, Celda actual, Celda destino, Camino camino) {
+        caminosExplorados++;
 
-		int fila = actual.obtenerFila(), columna = actual.obtenerColumna();
+        if (actual.equals(destino)) {
+            if (camino.estaBalanceado() &&
+                camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
+                caminoEncontrado = new Camino(camino);
+                return true;
+            }
+            return false;
+        }
 
-		// Abajo
-		if (fila + 1 < grilla.obtenerFilas()) {
-			Celda abajo = grilla.obtenerCelda(fila + 1, columna);
-			camino.agregarPaso(abajo);
-			if (buscar(grilla, abajo, destino, camino))
-				return true;
-			camino.removerUltimoPaso();
-		}
+        int fila = actual.obtenerFila();
+        int columna = actual.obtenerColumna();
 
-		// Derecha
-		if (columna + 1 < grilla.obtenerColumnas()) {
-			Celda derecha = grilla.obtenerCelda(fila, columna + 1);
-			camino.agregarPaso(derecha);
-			if (buscar(grilla, derecha, destino, camino))
-				return true;
-			camino.removerUltimoPaso();
-		}
+        // Mover hacia abajo
+        if (fila + 1 < grilla.obtenerFilas()) {
+            Celda abajo = grilla.obtenerCelda(fila + 1, columna);
+            camino.agregarPaso(abajo);
+            if (buscar(grilla, abajo, destino, camino)) return true;
+            camino.removerUltimoPaso();
+        }
 
-		return false;
-	}
+        // Mover hacia la derecha
+        if (columna + 1 < grilla.obtenerColumnas()) {
+            Celda derecha = grilla.obtenerCelda(fila, columna + 1);
+            camino.agregarPaso(derecha);
+            if (buscar(grilla, derecha, destino, camino)) return true;
+            camino.removerUltimoPaso();
+        }
+
+        return false;
+    }
 }

@@ -8,18 +8,18 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import main.java.algoritmo.BusquedaFuerzaBruta;
+import main.java.algoritmo.BusquedaConPodaInteligente;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
 
-public class BusquedaFuerzaBrutaTest {
+public class BusquedaConPodaInteligenteTest {
 
 	private IBusquedaCamino buscador;
 
 	@Before
 	public void setUp() {
-		buscador = new BusquedaFuerzaBruta();
+		buscador = new BusquedaConPodaInteligente();
 	}
 
 	@Test

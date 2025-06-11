@@ -21,12 +21,8 @@ public class Grilla {
 	}
 
 	private void validarMatriz(int[][] matriz) {
-		if (matriz == null)
-			throw new IllegalArgumentException("La matriz no puede ser null.");
-		if (matriz.length == 0)
-			throw new IllegalArgumentException("La matriz debe tener al menos una fila.");
-		if (matriz[0] == null || matriz[0].length == 0)
-			throw new IllegalArgumentException("La matriz debe tener al menos una columna.");
+		if (matriz == null || matriz.length == 0 || matriz[0].length == 0)
+			throw new IllegalArgumentException("La matriz no puede ser nula ni vacía");
 		if (matriz[0].length == matriz.length)
 			throw new IllegalArgumentException("La suma de las filas y columnas debe ser impar.");
 	}

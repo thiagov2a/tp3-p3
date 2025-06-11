@@ -82,9 +82,6 @@ public class ControladorGrilla implements IVistaControlador {
 			CaminoDTO caminoDTO = servicio.obtenerCaminoDTO(camino);
 			
 			vista.actualizarGrilla(grillaDTO, caminoDTO);
-
-			// TODO: Cargar Camino del ResultadoBusqueda a DTO para mostrarlo en pantalla
-
 			vista.mostrarMensaje(1, "Resultados",
 					"Fuerza Bruta: " + resultado.toString() + "\n\nPoda Inteligente: " + resultado2.toString());
 		} catch (Exception e) {

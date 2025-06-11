@@ -15,7 +15,7 @@ public class Camino {
 	}
 
 	public Camino(Camino camino) {
-		this.pasos = camino.pasos;
+		this.pasos = new ArrayList<>(camino.pasos);
 		this.cargaTotal = camino.cargaTotal;
 	}
 
