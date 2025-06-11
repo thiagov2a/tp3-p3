@@ -55,18 +55,23 @@ public class ServicioGrilla {
 
 	public CaminoDTO obtenerCaminoDTO(Camino camino) {
 		List<Celda> pasos = camino.obtenerPasos();
-
-		List<CeldaDTO> pasosDTO = pasos.stream()
+		List<CeldaDTO> pasosDTO = obtenesPasosDTO(pasos);
+		int cargaTotal = obtenerCargaTotal(pasos);
+		return new CaminoDTO(pasosDTO, cargaTotal);
+	}
+	
+	private List<CeldaDTO> obtenesPasosDTO(List<Celda> pasos) {
+		return pasos.stream()
 				.map(p -> new CeldaDTO(
 						p.obtenerFila(),
 						p.obtenerColumna(),
 						p.obtenerCarga()))
 				.toList();
-
-		int cargaTotal = pasos.stream()
+	}
+	
+	private int obtenerCargaTotal(List<Celda> pasos) {
+		return pasos.stream()
 				.mapToInt(p -> p.obtenerCarga())
 				.sum();
-
-		return new CaminoDTO(pasosDTO, cargaTotal);
 	}
 }

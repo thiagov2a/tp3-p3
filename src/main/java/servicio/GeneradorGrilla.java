@@ -21,7 +21,6 @@ public class GeneradorGrilla {
 		do {
 			int[][] matriz = new int[filas][columnas];
 
-			// Cargar con valores aleatorios de +1 y -1
 			for (int i = 0; i < filas; i++) {
 				for (int j = 0; j < columnas; j++) {
 					matriz[i][j] = random.nextBoolean() ? 1 : -1;

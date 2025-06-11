@@ -16,7 +16,7 @@ public class CaminoDTO {
 		return pasos;
 	}
 
-	public int obtenerSumaTotal() {
+	public int obtenerCargaTotal() {
 		return cargaTotal;
 	}
 }
