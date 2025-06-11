@@ -24,6 +24,7 @@ public class VistaGrilla {
 
 	private JFrame frame;
 	private JPanel panelGrilla;
+	private JPanel panelBotones;
 	private JButton btnCargarJson;
 	private JButton btnCargarGrilla;
 	private JButton btnEjecutar;
@@ -38,25 +39,35 @@ public class VistaGrilla {
 		frame.setSize(600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
-
 		frame.setLayout(new BorderLayout());
 
-		panelGrilla = new JPanel();
-		frame.add(panelGrilla, BorderLayout.CENTER);
+		construirPanelGrilla();
+		construirPanelBotones();
 
-		JPanel panelBotones = new JPanel(new FlowLayout());
-		btnCargarJson = new JButton("Cargar Json");
-		btnCargarGrilla = new JButton("Cargar Grilla");
-		btnEjecutar = new JButton("Ejecutar Algoritmo");
+		frame.add(panelGrilla, BorderLayout.CENTER);
+		frame.add(panelBotones, BorderLayout.SOUTH);
+	}
+
+	private void construirPanelGrilla() {
+		panelGrilla = new JPanel();
+	}
+
+	private void construirPanelBotones() {
+		panelBotones = new JPanel(new FlowLayout());
+
+		btnCargarJson = crearBoton("Cargar Json", () -> controlador.cargarGrillaDesdeArchivo());
+		btnCargarGrilla = crearBoton("Cargar Grilla", () -> controlador.cargarGrillaAleatoria());
+		btnEjecutar = crearBoton("Ejecutar Algoritmo", () -> controlador.ejecutarAlgoritmo());
 
 		panelBotones.add(btnCargarJson);
 		panelBotones.add(btnCargarGrilla);
 		panelBotones.add(btnEjecutar);
-		frame.add(panelBotones, BorderLayout.SOUTH);
+	}
 
-		btnCargarJson.addActionListener(e -> controlador.cargarGrillaDesdeArchivo());
-		btnCargarGrilla.addActionListener(e -> controlador.cargarGrillaAleatoria());
-		btnEjecutar.addActionListener(e -> controlador.ejecutarAlgoritmo());
+	private JButton crearBoton(String texto, Runnable accion) {
+		JButton boton = new JButton(texto);
+		boton.addActionListener(e -> accion.run());
+		return boton;
 	}
 
 	public void mostrar() {
@@ -68,58 +79,65 @@ public class VistaGrilla {
 
 		int filas = grillaDTO.obtenerFilas();
 		int columnas = grillaDTO.obtenerColumnas();
+		CeldaDTO[][] celdas = grillaDTO.obtenerCeldas();
 
 		panelGrilla.setLayout(new GridLayout(filas, columnas));
 
-		CeldaDTO[][] celdas = grillaDTO.obtenerCeldas();
-
-		for (int i = 0; i < celdas.length; i++) {
-			for (int j = 0; j < celdas[i].length; j++) {
-				CeldaDTO celda = celdas[i][j];
-				JPanel celdaPanel = new JPanel(new BorderLayout());
-				Integer celdaCarga = celda.obtenerCarga();
-				JLabel celdaLabel = new JLabel(celdaCarga.toString());
-
-				celdaLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
-				celdaLabel.setHorizontalAlignment(SwingConstants.CENTER);
-				celdaLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-				celdaPanel.add(celdaLabel, BorderLayout.CENTER);
-				celdaPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-				celdaPanel.setBackground(colorPorCarga(celda.obtenerCarga()));
-
-				panelGrilla.add(celdaPanel);
+		for (int fila = 0; fila < filas; fila++) {
+			for (int columna = 0; columna < columnas; columna++) {
+				CeldaDTO celda = celdas[fila][columna];
+				panelGrilla.add(crearPanelCelda(celda));
 			}
 		}
 
 		panelGrilla.revalidate();
 		panelGrilla.repaint();
 	}
-	
+
 	public void actualizarGrilla(GrillaDTO grillaDTO, CaminoDTO caminoDTO) {
 		List<CeldaDTO> pasos = caminoDTO.obtenerPasos();
-		int numeroDeColumnas = grillaDTO.obtenerColumnas();
-		for (CeldaDTO celdaDTO : pasos) {
-			int fila = celdaDTO.obtenerFila();
-			int columna = celdaDTO.obtenerColumna();
-			int indice = (fila * numeroDeColumnas) + columna;
+		int columnas = grillaDTO.obtenerColumnas();
+
+		for (CeldaDTO celda : pasos) {
+			int fila = celda.obtenerFila();
+			int columna = celda.obtenerColumna();
+			int indice = (fila * columnas) + columna;
+
 			JPanel celdaPanel = (JPanel) panelGrilla.getComponent(indice);
 			celdaPanel.setBackground(colorPorCarga(0));
-			panelGrilla.add(celdaPanel, indice);
 		}
+
+		panelGrilla.revalidate();
+		panelGrilla.repaint();
+	}
+
+	private JPanel crearPanelCelda(CeldaDTO celda) {
+		JPanel panel = new JPanel(new BorderLayout());
+		
+		Integer carga = celda.obtenerCarga();
+		JLabel label = new JLabel(carga.toString());
+
+		label.setFont(new Font("Comic Sans MS", Font.BOLD, 24));
+		label.setHorizontalAlignment(SwingConstants.CENTER);
+		label.setVerticalAlignment(SwingConstants.CENTER);
+
+		panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		panel.setBackground(colorPorCarga(celda.obtenerCarga()));
+		panel.add(label, BorderLayout.CENTER);
+
+		return panel;
 	}
 
 	private Color colorPorCarga(int carga) {
 		return switch (carga) {
-		case 1 -> Color.GREEN;
-		case -1 -> Color.RED;
-		default -> Color.LIGHT_GRAY;
+			case 1 -> Color.GREEN;
+			case -1 -> Color.RED;
+			default -> Color.LIGHT_GRAY;
 		};
 	}
 
-	// "tipo" puede tener los valores: 0 (error), 1 (information), 2 (warning)
 	public void mostrarMensaje(int tipo, String titulo, String mensaje) {
-		JOptionPane.showMessageDialog(frame, mensaje, titulo, tipo, null);
+		JOptionPane.showMessageDialog(frame, mensaje, titulo, tipo);
 	}
 
 	public void colocarControlador(IVistaControlador controlador) {

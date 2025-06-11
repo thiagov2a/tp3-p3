@@ -27,8 +27,8 @@ public class ConsumoGrilla {
 			}
 			return new Grilla(matriz);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error al cargar la grilla: " + e.getMessage());
+			// e.printStackTrace();
+			throw new RuntimeException(e.getMessage());
 		}
 	}
 }

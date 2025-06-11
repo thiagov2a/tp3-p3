@@ -14,16 +14,24 @@ import main.java.modelo.ResultadoBusqueda;
 
 public class ServicioGrilla {
 
+	private Random random;
+	private GeneradorGrilla generador;
+
+	public ServicioGrilla() {
+		this.random = new Random();
+		this.generador = new GeneradorGrilla(random);
+	}
+
 	public Grilla cargarGrillaAleatoria() {
-		Random random = new Random();
-		GeneradorGrilla generador = new GeneradorGrilla(random);
-		int filas = random.nextInt(1, 15);
+		int filas = random.nextInt(2, 10);
 		int columnas = filas + 1;
 		return generador.generar(filas, columnas);
 	}
 
 	public Grilla cargarGrillaDesdeArchivo() {
-		return ConsumoGrilla.cargarGrillaDesdeJson("src/main/recursos/grilla_ejemplo_1.json");
+		int numeroArchivo = random.nextInt(1, 10);
+		String ubicacionArchivo = String.format("src/main/recursos/grilla_ejemplo_%d.json", numeroArchivo);
+		return ConsumoGrilla.cargarGrillaDesdeJson(ubicacionArchivo);
 	}
 
 	public ResultadoBusqueda ejecutarAlgoritmo(IBusquedaCamino algoritmo, Grilla grilla) {
@@ -33,10 +41,13 @@ public class ServicioGrilla {
 	public GrillaDTO obtenerGrillaDTO(Grilla grilla) {
 		Celda[][] celdas = grilla.obtenerCeldas();
 		CeldaDTO[][] celdasDTO = new CeldaDTO[grilla.obtenerFilas()][grilla.obtenerColumnas()];
+		
 		for (int i = 0; i < grilla.obtenerFilas(); i++) {
 			for (int j = 0; j < grilla.obtenerColumnas(); j++) {
-				Celda c = celdas[i][j];
-				celdasDTO[i][j] = new CeldaDTO(c.obtenerFila(), c.obtenerColumna(), c.obtenerCarga());
+				celdasDTO[i][j] = new CeldaDTO(
+						celdas[i][j].obtenerFila(),
+						celdas[i][j].obtenerColumna(),
+						celdas[i][j].obtenerCarga());
 			}
 		}
 		return new GrillaDTO(celdasDTO);
@@ -46,9 +57,15 @@ public class ServicioGrilla {
 		List<Celda> pasos = camino.obtenerPasos();
 
 		List<CeldaDTO> pasosDTO = pasos.stream()
-				.map(p -> new CeldaDTO(p.obtenerFila(), p.obtenerColumna(), p.obtenerCarga())).toList();
+				.map(p -> new CeldaDTO(
+						p.obtenerFila(),
+						p.obtenerColumna(),
+						p.obtenerCarga()))
+				.toList();
 
-		int cargaTotal = pasos.stream().mapToInt(p -> p.obtenerCarga()).sum();
+		int cargaTotal = pasos.stream()
+				.mapToInt(p -> p.obtenerCarga())
+				.sum();
 
 		return new CaminoDTO(pasosDTO, cargaTotal);
 	}
