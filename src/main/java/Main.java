@@ -30,8 +30,6 @@ public class Main {
 			Random random = new Random();
 			GeneradorGrilla generador = new GeneradorGrilla(random);
 			Grilla grilla = generador.generar(filas, columnas);
-			// Grilla grilla =
-			// ConsumoGrilla.cargarGrillaDesdeJson("src/main/recursos/grilla_ejemplo_1.json");
 
 			System.out.println("\n============================================");
 			System.out.println("Tamaño de grilla: " + filas + "x" + columnas);
