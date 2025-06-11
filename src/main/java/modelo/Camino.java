@@ -14,6 +14,11 @@ public class Camino {
 		this.cargaTotal = 0;
 	}
 
+	public Camino(Camino camino) {
+		this.pasos = camino.pasos;
+		this.cargaTotal = camino.cargaTotal;
+	}
+
 	public void agregarPaso(Celda celda) {
 		pasos.add(celda);
 		cargaTotal += celda.obtenerCarga();

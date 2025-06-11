@@ -7,18 +7,16 @@ import main.java.dto.CaminoDTO;
 import main.java.dto.CeldaDTO;
 import main.java.dto.GrillaDTO;
 import main.java.interfaz.IBusquedaCamino;
-import main.java.interfaz.IGeneradorGrilla;
 import main.java.modelo.Camino;
 import main.java.modelo.Celda;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
-import main.java.servicio.generadores.GeneradorGrillaAleatoria;
 
 public class ServicioGrilla {
 
 	public Grilla cargarGrillaAleatoria() {
 		Random random = new Random();
-		IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+		GeneradorGrilla generador = new GeneradorGrilla(random);
 		int filas = random.nextInt(1, 15);
 		int columnas = filas + 1;
 		return generador.generar(filas, columnas);
@@ -46,17 +44,12 @@ public class ServicioGrilla {
 
 	public CaminoDTO obtenerCaminoDTO(Camino camino) {
 		List<Celda> pasos = camino.obtenerPasos();
-		
-		List<CeldaDTO> pasosDTO = pasos.stream().map(p -> new CeldaDTO(
-				p.obtenerFila(),
-				p.obtenerColumna(),
-				p.obtenerCarga()))
-				.toList();
-		
-		int cargaTotal = pasos.stream()
-				.mapToInt(p -> p.obtenerCarga())
-				.sum();
-		
+
+		List<CeldaDTO> pasosDTO = pasos.stream()
+				.map(p -> new CeldaDTO(p.obtenerFila(), p.obtenerColumna(), p.obtenerCarga())).toList();
+
+		int cargaTotal = pasos.stream().mapToInt(p -> p.obtenerCarga()).sum();
+
 		return new CaminoDTO(pasosDTO, cargaTotal);
 	}
 }

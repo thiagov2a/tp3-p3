@@ -1,9 +1,5 @@
 package main.java.algoritmo;
 
-import java.util.List;
-
-import main.java.dto.CaminoDTO;
-import main.java.dto.CeldaDTO;
 import main.java.interfaz.IBusquedaCamino;
 import main.java.modelo.Camino;
 import main.java.modelo.Celda;
@@ -43,8 +39,8 @@ public class BusquedaConPodaInteligente implements IBusquedaCamino {
 
 		if (actual.equals(destino)) {
 			if (camino.estaBalanceado()
-					&& camino.obtenerLongitud() == grilla.obtenerFilas() + grilla.obtenerColumnas() - 1) {
-				caminoEncontrado = camino; // TODO: Copia profunda
+					&& camino.obtenerLongitud() == (grilla.obtenerFilas() + grilla.obtenerColumnas() - 1)) {
+				caminoEncontrado = new Camino(camino);
 				return true;
 			}
 			return false;

@@ -6,12 +6,11 @@ import main.java.algoritmo.BusquedaConPodaInteligente;
 import main.java.algoritmo.BusquedaFuerzaBruta;
 import main.java.controlador.ControladorGrilla;
 import main.java.interfaz.IBusquedaCamino;
-import main.java.interfaz.IGeneradorGrilla;
 import main.java.interfaz.IVistaControlador;
 import main.java.modelo.Grilla;
 import main.java.modelo.ResultadoBusqueda;
+import main.java.servicio.GeneradorGrilla;
 import main.java.servicio.ServicioGrilla;
-import main.java.servicio.generadores.GeneradorGrillaAleatoria;
 import main.java.vista.VistaGrilla;
 
 public class Main {
@@ -29,7 +28,7 @@ public class Main {
 			int columnas = tamaño + 1; // Número par de pasos
 
 			Random random = new Random();
-			IGeneradorGrilla generador = new GeneradorGrillaAleatoria(random);
+			GeneradorGrilla generador = new GeneradorGrilla(random);
 			Grilla grilla = generador.generar(filas, columnas);
 			// Grilla grilla =
 			// ConsumoGrilla.cargarGrillaDesdeJson("src/main/recursos/grilla_ejemplo_1.json");
